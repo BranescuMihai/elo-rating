@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Rating</string>
+
+    <string name="title_ranking">Rank</string>
+    <string name="title_name">Name</string>
+
+    <string name="header_results">Results</string>
+    <string name="header_suggestions">Suggestions</string>
+
+    <string name="total_wins">Wins: %d</string>
+    <string name="total_losses">Losses: %d</string>
+    <string name="wins_short">W: %d</string>
+    <string name="losses_short">L: %d</string>
+    <string name="name_with_score">%1$s (%2$d)</string>
+
+    <string name="file_names">Names</string>
+    <string name="file_matches">Matches</string>
+
+</resources>
