@@ -38,6 +38,10 @@ class DetailsPresenter implements DetailsContract.Presenter {
 
     @Override
     public List<String> getGroupHeaders() {
+        if (view == null) {
+            return null;
+        }
+
         List<String> headers = new ArrayList<>();
         headers.add(view.getContext().getString(R.string.header_results));
         headers.add(view.getContext().getString(R.string.header_suggestions));
