@@ -1,7 +1,6 @@
 package com.mihai.rating.elo_algorithm;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.mihai.rating.R;
 import com.mihai.rating.model.Match;
@@ -9,11 +8,9 @@ import com.mihai.rating.model.MatchState;
 import com.mihai.rating.model.Player;
 import com.mihai.rating.model.WinsLossesResult;
 import com.mihai.rating.utils.Constants;
+import com.mihai.rating.utils.FileUtils;
+import com.mihai.rating.utils.ReadFileActions;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,9 +19,7 @@ import java.util.concurrent.Callable;
 import rx.Observable;
 
 
-public class EloRankingManager implements EloRankingManagerFacade {
-
-    private static final String TAG = EloRankingManager.class.getName();
+public class EloRankingManager implements EloRankingManagerFacade, ReadFileActions {
 
     List<Player> players;
     private Observable<List<Player>> playersObservable;
@@ -34,8 +29,8 @@ public class EloRankingManager implements EloRankingManagerFacade {
         playersObservable = Observable.fromCallable(new Callable<List<Player>>() {
             @Override
             public List<Player> call() throws Exception {
-                readFromFile(context, R.raw.names, R.string.file_names);
-                readFromFile(context, R.raw.matches, R.string.file_matches);
+                FileUtils.readFromFile(EloRankingManager.this, context, R.raw.names, R.string.file_names);
+                FileUtils.readFromFile(EloRankingManager.this, context, R.raw.matches, R.string.file_matches);
                 Collections.sort(players);
                 return players;
             }
@@ -65,7 +60,13 @@ public class EloRankingManager implements EloRankingManagerFacade {
         return player;
     }
 
-    private void setUpdatedPlayers(Match match) {
+    @Override
+    public void addPlayer(Player player) {
+        players.add(player);
+    }
+
+    @Override
+    public void setUpdatedPlayers(Match match) {
         Player firstPlayer = players.get(Integer.valueOf(match.getFirstPlayerId()));
         Player secondPlayer = players.get(Integer.valueOf(match.getSecondPlayerId()));
 
@@ -100,40 +101,6 @@ public class EloRankingManager implements EloRankingManagerFacade {
 
         players.set(firstPlayer.getId(), firstPlayer);
         players.set(secondPlayer.getId(), secondPlayer);
-    }
-
-    private void readFromFile(Context context, int rawFile, int fileName) {
-
-        boolean isReadingNames = true;
-
-        if (fileName == R.string.file_matches) {
-            isReadingNames = false;
-        }
-
-        String line;
-        try {
-            InputStreamReader inputStreamReader =
-                    new InputStreamReader(context.getResources().openRawResource(rawFile));
-            BufferedReader bufferedReader =
-                    new BufferedReader(inputStreamReader);
-
-            while ((line = bufferedReader.readLine()) != null) {
-                String[] split = line.split(" ");
-                if (isReadingNames) {
-                    Player player = new Player(Integer.valueOf(split[0]), split[1]);
-                    players.add(player);
-                } else {
-                    Match match = new Match(split[0], split[1], MatchState.PLAYER_ONE_WON);
-                    setUpdatedPlayers(match);
-                }
-            }
-
-            bufferedReader.close();
-        } catch (FileNotFoundException ex) {
-            Log.d(TAG, "Unable to open file '" + fileName + "'");
-        } catch (IOException ex) {
-            Log.d(TAG, "Error reading file '" + fileName + "'");
-        }
     }
 
     private int getOpponentIndex(List<WinsLossesResult> winsLossesResults, String opponent) {
