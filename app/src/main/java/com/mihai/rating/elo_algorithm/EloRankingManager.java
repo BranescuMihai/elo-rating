@@ -103,25 +103,6 @@ public class EloRankingManager implements EloRankingManagerFacade, ReadFileActio
         players.set(secondPlayer.getId(), secondPlayer);
     }
 
-    private int getOpponentIndex(List<WinsLossesResult> winsLossesResults, String opponent) {
-        for (int i = 0; i < winsLossesResults.size(); i++) {
-            WinsLossesResult winsLossesResult = winsLossesResults.get(i);
-            if (winsLossesResult.getOpponent().equals(opponent)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    private String getOpponentName(int id) {
-        for (Player player : players) {
-            if (player.getId() == id) {
-                return player.getName();
-            }
-        }
-        return "";
-    }
-
     List<WinsLossesResult> getResults(Player player) {
 
         List<WinsLossesResult> winsLossesResults = new ArrayList<>();
@@ -171,5 +152,24 @@ public class EloRankingManager implements EloRankingManagerFacade, ReadFileActio
                 players.set(i, player);
             }
         }
+    }
+
+    private int getOpponentIndex(List<WinsLossesResult> winsLossesResults, String opponent) {
+        for (int i = 0; i < winsLossesResults.size(); i++) {
+            WinsLossesResult winsLossesResult = winsLossesResults.get(i);
+            if (winsLossesResult.getOpponent().equals(opponent)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private String getOpponentName(int id) {
+        for (Player player : players) {
+            if (player.getId() == id) {
+                return player.getName();
+            }
+        }
+        return "";
     }
 }
